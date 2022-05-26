@@ -59,7 +59,7 @@ void setup() {
 void loop() {
     ts.execute();   // обрабатываем планировщик каждый прогон;
 
-    // проверка левого поворота;
+// проверка левого поворота;
     if (digitalRead(PININ_LEFT) == LOW) {
         if (not f_leftIsOn) {
             f_leftIsOn = true; 
@@ -71,7 +71,7 @@ void loop() {
             T_leftOn.restartDelayed();
         }
     }
-    // проверка правого поворота;
+// проверка правого поворота;
     if (digitalRead(PININ_RIGHT) == LOW) {
         if (not f_rightIsOn) {
             f_rightIsOn = true; 
@@ -83,7 +83,7 @@ void loop() {
             T_rightOn.restartDelayed();
         }
     }
-    // иначе габарит;
+// иначе габарит;
     if((not f_rightIsOn) & (not f_leftIsOn) & f_leftIsFinished & f_rightIsFinished) { 
         for(int i = 0; i < NUM_LEDS_GABARIT;  i++) { 
             left_strp.setPixelColor(i, left_strp.Color(GABARIT_R, GABARIT_G, GABARIT_B));
