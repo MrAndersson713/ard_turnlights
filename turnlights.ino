@@ -64,7 +64,16 @@ void setup() {
     right_strp.begin();
     right_strp.show();  
     sei();
-}
+
+    for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+      for(int i=0; i<left_strp.numPixels(); i++) { 
+        int pixelHue = firstPixelHue + (i * 65536L / left_strp.numPixels());
+        left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(pixelHue)));
+      }
+      left_strp.show();
+      delay(1000);
+    }
+} 
 
 void loop() {
     ts.execute();   // обрабатываем планировщик каждый прогон;
