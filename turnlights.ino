@@ -20,9 +20,21 @@
 #define PININ_RIGHT 6       // вход от реле для правого поворота;
 #define STOP_DELAY 1000     // задержка отключения поворота;
 #define LENGTH_LINE 8       // количество бегущих светодиодов;
-#define GABARIT_R 200       // габарит красный;
-#define GABARIT_G 200       // габарит зеленый;
-#define GABARIT_B 200       // габарит синий;
+
+// поворотники;
+#define TURN_HUE 200      // оттенок 0-65535;
+#define TURN_SAT 200      // насыщенность 0-255 (0 - оттенки серого);
+#define TURN_VAL 200      // яркость 0-255;
+
+// габарит;
+#define GABARIT_HUE 200      // оттенок 0-65535;
+#define GABARIT_SAT 200      // насыщенность 0-255 (0 - оттенки серого);
+#define GABARIT_VAL 200      // яркость 0-255;
+
+// набегающий свет при старте;
+#define  RUN_HUE 65000      // оттенок 0-65535;
+#define  RUN_SAT 0          // насыщенность 0-255 (0 - оттенки серого);
+#define  RUN_VAL 255        // яркость 0-255;
 
 // ================================ Task scheduler ============================================================;
 #define _TASK_SLEEP_ON_IDLE_RUN
@@ -62,18 +74,29 @@ void setup() {
     left_strp.begin();
     left_strp.show();
     right_strp.begin();
-    right_strp.show();  
+    right_strp.show();
     sei();
 
-    for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
-      for(int i = 0; i < left_strp.numPixels(); i++) { 
-        int pixelHue = firstPixelHue + (i * 65536L / left_strp.numPixels());
-        left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(pixelHue)));
-      }
-      left_strp.show();
-      delay(1000);
-    }
-} 
+    // радуга 5 циклов после включения;
+        for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+          for(int i = 0; i < left_strp.numPixels(); i++) {
+            int pixelHue = firstPixelHue + (i * 65536L / left_strp.numPixels());
+            left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(pixelHue)));
+          }
+          left_strp.show();
+          delay(1000);
+        }
+       
+    // заполнения перед включением;
+        for(int j = left_strp.numPixels(); j <= 0; j--){
+            for(int i = 0; i < j; i++) {
+                left_strp.setPixelColor(i, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL));
+                left_strp.setPixelColor(i - 1, 0, 0, 0);
+                left_strp.show();
+            }
+        }
+        left_strp.clear();
+}
 
 void loop() {
     ts.execute();   // обрабатываем планировщик каждый прогон;
@@ -105,8 +128,8 @@ void loop() {
 // иначе габарит;
     if((not f_rightIsOn) & (not f_leftIsOn) & f_leftIsFinished & f_rightIsFinished) { 
         for(int i = 0; i < NUM_LEDS_GABARIT;  i++) { 
-            left_strp.setPixelColor(i, left_strp.Color(GABARIT_R, GABARIT_G, GABARIT_B));
-            right_strp.setPixelColor(i, right_strp.Color(GABARIT_R, GABARIT_G, GABARIT_B));
+            left_strp.setPixelColor(i, left_strp.Color(200, 200, 200));
+            right_strp.setPixelColor(i, right_strp.Color(200, 200, 200));
         }
         left_strp.show();
         right_strp.show();
@@ -166,6 +189,7 @@ void F_right(){
             }
     }
 }
+
 void F_leftOn() {
     f_leftIsOn = false;
 }
