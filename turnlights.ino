@@ -18,7 +18,7 @@
 #define PINOUT_RIGHT 8      // номер выхода на правый поворот;
 #define PININ_LEFT 3        // вход от реле для левого поворота;
 #define PININ_RIGHT 6       // вход от реле для правого поворота;
-#define STOP_DELAY 1000     // задержка отключения поворота;
+#define STOP_DELAY 1000     // задержка отключения поворота ms;
 #define LENGTH_LINE 8       // количество бегущих светодиодов;
 
 // поворотники;
@@ -54,6 +54,7 @@ Task T_left (LED_STEP_DELAY, NUM_LEDS + LENGTH_LINE, &F_left, &ts, true);
 Task T_right (LED_STEP_DELAY, NUM_LEDS + LENGTH_LINE, &F_right, &ts, true); 
 // =============================================================================================================
 
+// инициализация лент;
 Adafruit_NeoPixel left_strp = Adafruit_NeoPixel(NUM_LEDS, PINOUT_LEFT, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel right_strp = Adafruit_NeoPixel(NUM_LEDS, PINOUT_RIGHT, NEO_GRB + NEO_KHZ800);
 
@@ -126,8 +127,8 @@ void loop() {
 // иначе габарит;
     if((not f_rightIsOn) & (not f_leftIsOn) & f_leftIsFinished & f_rightIsFinished) { 
         for(int i = 0; i < NUM_LEDS_GABARIT;  i++) { 
-            left_strp.setPixelColor(i, left_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE));
-            right_strp.setPixelColor(i, right_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE));
+            left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE)));
+            right_strp.setPixelColor(i, right_strp.gamma32(right_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE)));
         }
         left_strp.show();
         right_strp.show();
