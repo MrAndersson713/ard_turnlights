@@ -3,16 +3,16 @@
 
     Платформа нано.
     Использует сигналы с реле поворотников.
-    На выходуе бегущая светодиодная лента или габариты.
+    На выходуе бегущая полоса или габариты.
     '''
 */
 
 #include <Adafruit_NeoPixel.h> 
 #include <TaskScheduler.h>
 
-#define VERSION 01001
+#define VERSION 01002
 #define LED_STEP_DELAY 12   // скорость мигания поворота, по сути пауза между загораниями светодиодов;
-#define NUM_LEDS 44         // количество светодиодов в поворотнике;
+#define NUM_LEDS 26         // количество светодиодов в поворотнике;
 #define NUM_LEDS_GABARIT 26 // количество светодиодов в габарите;
 #define PINOUT_LEFT 7       // номер выхода на левый поворот;
 #define PINOUT_RIGHT 8      // номер выхода на правый поворот;
@@ -22,18 +22,18 @@
 #define LENGTH_LINE 8       // количество бегущих светодиодов;
 
 // поворотники;
-#define TURN_HUE 200      // оттенок 0-65535;
-#define TURN_SAT 200      // насыщенность 0-255 (0 - оттенки серого);
+#define TURN_HUE 2000      // оттенок 0-65535;
+#define TURN_SAT 255      // насыщенность 0-255 (0 - оттенки серого);
 #define TURN_VAL 200      // яркость 0-255;
 
 // габарит;
-#define GABARIT_HUE 200      // оттенок 0-65535;
-#define GABARIT_SAT 200      // насыщенность 0-255 (0 - оттенки серого);
+#define GABARIT_HUE 65000      // оттенок 0-65535;
+#define GABARIT_SAT 0      // насыщенность 0-255 (0 - оттенки серого);
 #define GABARIT_VAL 200      // яркость 0-255;
 
 // набегающий свет при старте;
 #define  RUN_HUE 65000      // оттенок 0-65535;
-#define  RUN_SAT 0          // насыщенность 0-255 (0 - оттенки серого);
+#define  RUN_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
 #define  RUN_VAL 255        // яркость 0-255;
 
 // ================================ Task scheduler ============================================================;
@@ -77,25 +77,23 @@ void setup() {
     right_strp.show();
     sei();
 
-    // радуга 5 циклов после включения;
-        for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
-          for(int i = 0; i < left_strp.numPixels(); i++) {
-            int pixelHue = firstPixelHue + (i * 65536L / left_strp.numPixels());
-            left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(pixelHue)));
-          }
-          left_strp.show();
-          delay(1000);
+    left_strp.clear();
+    for(int j = left_strp.numPixels(); j > 0; j--){
+        for(int i = 0; i < j; i++) {
+            left_strp.setPixelColor(i, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL));
+            left_strp.setPixelColor(i - 1, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL/2));
+            left_strp.setPixelColor(i - 2, left_strp.Color(0, 0, 0));
+            left_strp.show();
+            delay(10);
         }
-       
-    // заполнения перед включением;
-        for(int j = left_strp.numPixels(); j <= 0; j--){
-            for(int i = 0; i < j; i++) {
-                left_strp.setPixelColor(i, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL));
-                left_strp.setPixelColor(i - 1, 0, 0, 0);
-                left_strp.show();
-            }
-        }
-        left_strp.clear();
+    }
+
+    left_strp.clear();
+    for(int i = 0; i < left_strp.numPixels(); i++) {
+        left_strp.setPixelColor(i, left_strp.Color(0, 200, 0));
+    }
+    left_strp.show();
+    delay(1000);
 }
 
 void loop() {
@@ -128,8 +126,8 @@ void loop() {
 // иначе габарит;
     if((not f_rightIsOn) & (not f_leftIsOn) & f_leftIsFinished & f_rightIsFinished) { 
         for(int i = 0; i < NUM_LEDS_GABARIT;  i++) { 
-            left_strp.setPixelColor(i, left_strp.Color(200, 200, 200));
-            right_strp.setPixelColor(i, right_strp.Color(200, 200, 200));
+            left_strp.setPixelColor(i, left_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE));
+            right_strp.setPixelColor(i, right_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE));
         }
         left_strp.show();
         right_strp.show();
@@ -138,16 +136,16 @@ void loop() {
 
 void F_left(){
     if (leftCount < NUM_LEDS) {
-            left_strp.setPixelColor(leftCount, left_strp.Color(255, 69, 0));    // устанавливаем цвет;
+            left_strp.setPixelColor(leftCount, left_strp.ColorHSV(TURN_HUE, TURN_SAT, TURN_VAL));    // устанавливаем цвет;
             left_strp.show();                                           // засвечиваем следующий светодиод; 
             leftCount++;
     }
     if (leftCount >= LENGTH_LINE){
             int c = leftCount - LENGTH_LINE + 2;
             left_strp.setPixelColor(c-2, left_strp.Color(0, 0, 0));     // плавно тушим свет;
-            left_strp.setPixelColor(c-1, left_strp.Color(63, 17, 0));
-            left_strp.setPixelColor(c, left_strp.Color(127, 34, 0));
-            left_strp.show();                                                   // в ленту; 
+            left_strp.setPixelColor(c-1, left_strp.ColorHSV(TURN_HUE, TURN_SAT, TURN_VAL/2));
+            left_strp.setPixelColor(c, left_strp.ColorHSV(TURN_HUE, TURN_SAT, TURN_VAL*2/3));
+            left_strp.show();                                           // в ленту; 
             if (leftCount >= NUM_LEDS){
                 leftCount++;
             }
@@ -165,15 +163,15 @@ void F_left(){
 
 void F_right(){
     if (rightCount < NUM_LEDS) {
-            right_strp.setPixelColor(rightCount, right_strp.Color(255, 69, 0));    // устанавливаем цвет;
+            right_strp.setPixelColor(rightCount, right_strp.ColorHSV(TURN_HUE, TURN_SAT, TURN_VAL));    // устанавливаем цвет;
             right_strp.show();                                           // засвечиваем следующий светодиод; 
             rightCount++;
     }
     if (rightCount >= LENGTH_LINE){
             int c = rightCount - LENGTH_LINE + 2;
             right_strp.setPixelColor(c-2, right_strp.Color(0, 0, 0));     // плавно тушим свет;
-            right_strp.setPixelColor(c-1, right_strp.Color(63, 17, 0));
-            right_strp.setPixelColor(c, right_strp.Color(127, 34, 0));
+            right_strp.setPixelColor(c-1, right_strp.ColorHSV(TURN_HUE, TURN_SAT, TURN_VAL/2));
+            right_strp.setPixelColor(c, right_strp.ColorHSV(TURN_HUE, TURN_SAT, TURN_VAL*2/3));
             right_strp.show();                                                   // в ленту; 
             if (rightCount >= NUM_LEDS){
                 rightCount++;
