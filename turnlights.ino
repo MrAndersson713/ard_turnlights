@@ -134,8 +134,8 @@ void loop() {
 // иначе габарит;
     if((not f_rightIsOn) & (not f_leftIsOn) & f_leftIsFinished & f_rightIsFinished) { 
         for(int i = 0; i < NUM_LEDS_GABARIT;  i++) { 
-            left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE)));
-            right_strp.setPixelColor(i, right_strp.gamma32(right_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_HUE)));
+            left_strp.setPixelColor(i, left_strp.gamma32(left_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_VAL)));
+            right_strp.setPixelColor(i, right_strp.gamma32(right_strp.ColorHSV(GABARIT_HUE, GABARIT_SAT, GABARIT_VAL)));
         }
         left_strp.show();
         right_strp.show();
