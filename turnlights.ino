@@ -35,6 +35,13 @@
 #define  RUN_HUE 65000      // оттенок 0-65535;
 #define  RUN_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
 #define  RUN_VAL 255        // яркость 0-255;
+#define  RUN_SPEED 10        // по сути задержки между итерациями цикла;
+
+// постоянный свет при старте;
+#define  START_HUE 20000      // оттенок 0-65535;
+#define  START_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
+#define  START_VAL 255        // яркость 0-255;
+#define  START_DEL 255        // время засвета;
 
 // ================================ Task scheduler ============================================================;
 #define _TASK_SLEEP_ON_IDLE_RUN
@@ -85,16 +92,16 @@ void setup() {
             left_strp.setPixelColor(i - 1, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL/2));
             left_strp.setPixelColor(i - 2, left_strp.Color(0, 0, 0));
             left_strp.show();
-            delay(10);
+            delay(RUN_SPEED);
         }
     }
 
     left_strp.clear();
     for(int i = 0; i < left_strp.numPixels(); i++) {
-        left_strp.setPixelColor(i, left_strp.Color(0, 200, 0));
+        left_strp.setPixelColor(i, left_strp.ColorHSV(START_HUE, START_SAT, START_VAL));
     }
     left_strp.show();
-    delay(1000);
+    delay(START_DEL);
 }
 
 void loop() {
