@@ -32,16 +32,26 @@
 #define GABARIT_VAL 200      // яркость 0-255;
 
 // набегающий свет при старте;
-#define  RUN_HUE 65000      // оттенок 0-65535;
-#define  RUN_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
-#define  RUN_VAL 255        // яркость 0-255;
+#define  RUNL_HUE 65000      // оттенок 0-65535;
+#define  RUNL_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
+#define  RUNL_VAL 255        // яркость 0-255;
 #define  RUN_SPEED 10        // по сути задержки между итерациями цикла;
+#define  RUN_LENGTH 4        // длина бегущей линии;
+
+#define  RUNR_HUE 65000      // оттенок 0-65535;
+#define  RUNR_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
+#define  RUNR_VAL 255        // яркость 0-255;
 
 // постоянный свет при старте;
-#define  START_HUE 20000      // оттенок 0-65535;
-#define  START_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
-#define  START_VAL 255        // яркость 0-255;
-#define  START_DEL 1000        // время засвета;
+#define  STARTL_HUE 20000      // оттенок 0-65535;
+#define  STARTL_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
+#define  STARTL_VAL 255        // яркость 0-255;
+#define  STARTL_DEL 1000        // время засвета;
+
+#define  STARTR_HUE 20000      // оттенок 0-65535;
+#define  STARTR_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
+#define  STARTR_VAL 255        // яркость 0-255;
+#define  STARTR_DEL 1000        // время засвета;
 
 // ================================ Task scheduler ============================================================;
 #define _TASK_SLEEP_ON_IDLE_RUN
@@ -87,21 +97,32 @@ void setup() {
 
     // бегущий заполняющий огонь пристарте;
     left_strp.clear();
-    for(int j = left_strp.numPixels(); j > 0; j--){
+    right_strp.clear();
+    for(int j = left_strp.numPixels(); j > 0; j -= RUN_LENGTH){
         for(int i = 0; i < j; i++) {
-            left_strp.setPixelColor(i, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL));
-            left_strp.setPixelColor(i - 1, left_strp.ColorHSV(RUN_HUE, RUN_SAT, RUN_VAL/2));
-            left_strp.setPixelColor(i - 2, left_strp.Color(0, 0, 0));
+            left_strp.setPixelColor(i, left_strp.ColorHSV(RUNL_HUE, RUNL_SAT, RUNL_VAL));
+            right_strp.setPixelColor(i, right_strp.ColorHSV(RUNR_HUE, RUNR_SAT, RUNR_VAL));
+            if (i > RUN_LENGTH){
+                int c = i - RUN_LENGTH;
+                left_strp.setPixelColor(c - 1, left_strp.ColorHSV(RUNL_HUE, RUNL_SAT, RUNL_VAL/2));
+                left_strp.setPixelColor(c - 2, left_strp.Color(0, 0, 0));
+                right_strp.setPixelColor(c - 1, right_strp.ColorHSV(RUNR_HUE, RUNR_SAT, RUNR_VAL/2));
+                right_strp.setPixelColor(c - 2, right_strp.Color(0, 0, 0));
+            }
             left_strp.show();
+            right_strp.show();
             delay(RUN_SPEED);
         }
     }
 
     // засвет одним цветом;
     left_strp.clear();
-    left_strp.fill(left_strp.ColorHSV(START_HUE, START_SAT, START_VAL));
+    right_strp.clear();
+    left_strp.fill(left_strp.ColorHSV(STARTL_HUE, STARTL_SAT, STARTL_VAL));
+    right_strp.fill(right_strp.ColorHSV(STARTR_HUE, STARTR_SAT, STARTR_VAL));
     left_strp.show();
-    delay(START_DEL);
+    right_strp.show();
+    delay(STARTL_DEL);
 }
 
 void loop() {
