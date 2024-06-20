@@ -41,7 +41,7 @@
 #define  START_HUE 20000      // оттенок 0-65535;
 #define  START_SAT 255          // насыщенность 0-255 (0 - оттенки серого);
 #define  START_VAL 255        // яркость 0-255;
-#define  START_DEL 255        // время засвета;
+#define  START_DEL 1000        // время засвета;
 
 // ================================ Task scheduler ============================================================;
 #define _TASK_SLEEP_ON_IDLE_RUN
@@ -85,6 +85,7 @@ void setup() {
     right_strp.show();
     sei();
 
+    // бегущий заполняющий огонь пристарте;
     left_strp.clear();
     for(int j = left_strp.numPixels(); j > 0; j--){
         for(int i = 0; i < j; i++) {
@@ -96,10 +97,9 @@ void setup() {
         }
     }
 
+    // засвет одним цветом;
     left_strp.clear();
-    for(int i = 0; i < left_strp.numPixels(); i++) {
-        left_strp.setPixelColor(i, left_strp.ColorHSV(START_HUE, START_SAT, START_VAL));
-    }
+    left_strp.fill(left_strp.ColorHSV(START_HUE, START_SAT, START_VAL));
     left_strp.show();
     delay(START_DEL);
 }
