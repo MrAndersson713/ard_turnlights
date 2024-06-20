@@ -10,7 +10,7 @@
 #include <Adafruit_NeoPixel.h> 
 #include <TaskScheduler.h>
 
-#define VERSION 01002
+#define VERSION 01003
 #define LED_STEP_DELAY 12   // скорость мигания поворота, по сути пауза между загораниями светодиодов;
 #define NUM_LEDS 26         // количество светодиодов в поворотнике;
 #define NUM_LEDS_GABARIT 26 // количество светодиодов в габарите;
