@@ -64,6 +64,8 @@ void F_right();     // мигание правого поворота;
 void F_leftOn();    // обработка задержки выключения;
 void F_rightOn();   // обработка задержки выключения;
 
+void funnyLights(); // гирлянда;
+
 // инициализация задач;
 Task T_leftOn (STOP_DELAY, TASK_ONCE, &F_leftOn, &ts, true);
 Task T_rightOn (STOP_DELAY, TASK_ONCE, &F_rightOn, &ts, true);
@@ -95,34 +97,7 @@ void setup() {
     right_strp.show();
     sei();
 
-    // бегущий заполняющий огонь пристарте;
-    left_strp.clear();
-    right_strp.clear();
-    for(int j = left_strp.numPixels(); j > 0; j -= RUN_LENGTH){
-        for(int i = 0; i < j; i++) {
-            left_strp.setPixelColor(i, left_strp.ColorHSV(RUNL_HUE, RUNL_SAT, RUNL_VAL));
-            right_strp.setPixelColor(i, right_strp.ColorHSV(RUNR_HUE, RUNR_SAT, RUNR_VAL));
-            if (i > RUN_LENGTH){
-                int c = i - RUN_LENGTH;
-                left_strp.setPixelColor(c - 1, left_strp.ColorHSV(RUNL_HUE, RUNL_SAT, RUNL_VAL/2));
-                left_strp.setPixelColor(c - 2, left_strp.Color(0, 0, 0));
-                right_strp.setPixelColor(c - 1, right_strp.ColorHSV(RUNR_HUE, RUNR_SAT, RUNR_VAL/2));
-                right_strp.setPixelColor(c - 2, right_strp.Color(0, 0, 0));
-            }
-            left_strp.show();
-            right_strp.show();
-            delay(RUN_SPEED);
-        }
-    }
-
-    // засвет одним цветом;
-    left_strp.clear();
-    right_strp.clear();
-    left_strp.fill(left_strp.ColorHSV(STARTL_HUE, STARTL_SAT, STARTL_VAL));
-    right_strp.fill(right_strp.ColorHSV(STARTR_HUE, STARTR_SAT, STARTR_VAL));
-    left_strp.show();
-    right_strp.show();
-    delay(STARTL_DEL);
+    funnyLights();
 }
 
 void loop() {
@@ -186,6 +161,7 @@ void F_left(){
             }
             else {
                 f_leftIsFinished = true;
+                funnyLights();
             }
     }
 }
@@ -213,6 +189,7 @@ void F_right(){
             }
             else {
                 f_rightIsFinished = true;
+                funnyLights();
             }
     }
 }
@@ -223,5 +200,35 @@ void F_leftOn() {
 
 void F_rightOn() {
     f_rightIsOn = false;
+}
+
+void funnyLights() {
+    // бегущий заполняющий огонь при старте;
+    left_strp.clear();
+    right_strp.clear();
+    for(int j = left_strp.numPixels(); j > 0; j -= RUN_LENGTH){
+        for(int i = 0; i < j; i++) {
+            left_strp.setPixelColor(i, left_strp.ColorHSV(RUNL_HUE, RUNL_SAT, RUNL_VAL));
+            right_strp.setPixelColor(i, right_strp.ColorHSV(RUNR_HUE, RUNR_SAT, RUNR_VAL));
+            if (i > RUN_LENGTH){
+                int c = i - RUN_LENGTH;
+                left_strp.setPixelColor(c - 1, left_strp.ColorHSV(RUNL_HUE, RUNL_SAT, RUNL_VAL/2));
+                left_strp.setPixelColor(c - 2, left_strp.Color(0, 0, 0));
+                right_strp.setPixelColor(c - 1, right_strp.ColorHSV(RUNR_HUE, RUNR_SAT, RUNR_VAL/2));
+                right_strp.setPixelColor(c - 2, right_strp.Color(0, 0, 0));
+            }
+            left_strp.show();
+            right_strp.show();
+            delay(RUN_SPEED);
+        }
+    }
+    // засвет одним цветом;
+    left_strp.clear();
+    right_strp.clear();
+    left_strp.fill(left_strp.ColorHSV(STARTL_HUE, STARTL_SAT, STARTL_VAL));
+    right_strp.fill(right_strp.ColorHSV(STARTR_HUE, STARTR_SAT, STARTR_VAL));
+    left_strp.show();
+    right_strp.show();
+    delay(STARTL_DEL);
 }
 
