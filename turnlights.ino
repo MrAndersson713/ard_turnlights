@@ -230,5 +230,7 @@ void funnyLights() {
     left_strp.show();
     right_strp.show();
     delay(STARTL_DEL);
+    left_strp.clear();
+    right_strp.clear();
 }
 
